@@ -8,7 +8,29 @@ namespace FindComputerStuff.SwiftMessages
 {
     public class MT103Parser
     {
-        public List<MessageSection> Parse(string file)
+        public List<MessageSection> Parse(string contents)
+        {
+            List<MessageSection> messages = new List<MessageSection>();
+            MessageSection message = new MessageSection();
+            messages.Add(message);
+
+            int pos = 0;
+            while (pos < contents.Length)
+            {
+                pos = ProcessCharacters(contents, pos, ref message);
+                if (contents[pos] == '$')
+                {
+                    //we've reached a message boundary
+                    message = new MessageSection();
+                    messages.Add(message);
+                    pos++;
+                }
+            }
+
+            return messages;
+
+        }
+        public List<MessageSection> ParseFile(string file)
         {
             /*
                 create messages array
@@ -39,24 +61,7 @@ namespace FindComputerStuff.SwiftMessages
                 loop
             */
             string contents = File.ReadAllText(file, new System.Text.UTF8Encoding(false));
-            List<MessageSection> messages = new List<MessageSection>();
-            MessageSection message = new MessageSection();
-            messages.Add(message);
-
-            int pos = 0;
-            while (pos < contents.Length)
-            {
-                pos = ProcessCharacters(contents, pos, ref message);
-                if (contents[pos] == '$')
-                {
-                    //we've reached a message boundary
-                    message = new MessageSection();
-                    messages.Add(message);
-                    pos++;
-                }
-            }
-
-            return messages;
+            return Parse(contents);
         }
 
         private int ProcessCharacters(string contents, int pos, ref MessageSection msg)

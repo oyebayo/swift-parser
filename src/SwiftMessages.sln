@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindComputerStuff.SwiftMessages", "FindComputerStuff.SwiftMessages.csproj", "{5858C7F1-1E82-445C-953D-E28895153CE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwiftMessages", "SwiftMessages.csproj", "{5858C7F1-1E82-445C-953D-E28895153CE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
