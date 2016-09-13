@@ -5,17 +5,17 @@ using System.Text;
 
 namespace FindComputerStuff.SwiftMessages
 {
-    public class MessageSection
+    public class Block
     {
-        public MessageSection()
+        public Block()
         {
-            Sections = new List<MessageSection>();
+            Sections = new List<Block>();
             Fields = new List<Field>();
             IsOpen = true;
         }
         public string ID { get; set; }
         public string Value { get; set; }
-        public List<MessageSection> Sections { get; set; }
+        public List<Block> Sections { get; set; }
         public List<Field> Fields { get; set; }
         internal bool IsOpen { get; set; }
 

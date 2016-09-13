@@ -9,9 +9,9 @@ namespace FindComputerStuff.SwiftMessages
     {
         public Message()
         {
-            Sections = new List<MessageSection>();
+            Sections = new List<Block>();
         }
-        public List<MessageSection> Sections { get; set; }
+        public List<Block> Sections { get; set; }
         public override string ToString()
         {
             return string.Join("", Sections);
