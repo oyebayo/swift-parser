@@ -8,58 +8,30 @@ namespace FindComputerStuff.SwiftMessages
 {
     public class MT103Parser
     {
-        public List<MessageSection> Parse(string contents)
+        public List<Message> Parse(string contents)
         {
-            List<MessageSection> messages = new List<MessageSection>();
-            MessageSection message = new MessageSection();
-            messages.Add(message);
-
+            List<Message> messages = new List<Message>();
+            MessageSection root = new MessageSection();
             int pos = 0;
             while (pos < contents.Length)
             {
-                pos = ProcessCharacters(contents, pos, ref message);
-                if (contents[pos] == '$')
+                pos = ProcessCharacters(contents, pos, ref root);
+                bool isEndOfMessage = (contents.Length - 3 >= pos && contents.Substring(pos, 3) == "{1:");
+                bool isEndOfFile = (pos >= contents.Length);
+                if(isEndOfFile || isEndOfMessage)
                 {
-                    //we've reached a message boundary
-                    message = new MessageSection();
+                    Message message = new Message();
+                    message.Sections.AddRange(root.Sections.ToArray());
                     messages.Add(message);
-                    pos++;
+                    root.Sections.Clear();
                 }
             }
 
             return messages;
 
         }
-        public List<MessageSection> ParseFile(string file)
+        public List<Message> ParseFile(string file)
         {
-            /*
-                create messages array
-                create new message
-                do
-                * if no more chars
-                ** break out of loop
-                * read char
-                * is it a dollar sign? 
-                ** close current message
-                ** add to messages array
-                ** set message = new message
-                ** continue
-                * is it a brace? 
-                ** read chars until next colon
-                ** use the characters found to create section
-                ** read until next close brace to create 'content'
-                ** split 'content' on LF and colon to create item array
-                *** is it a single item array?
-                **** assign value to the first item
-                *** else
-                ****for each item in array
-                ***** read until next colon
-                ***** use the xters except colon to create element
-                ***** read until end to create value
-                ***** close the element
-                ** close the node
-                loop
-            */
             string contents = File.ReadAllText(file, new System.Text.UTF8Encoding(false));
             return Parse(contents);
         }
@@ -81,6 +53,9 @@ namespace FindComputerStuff.SwiftMessages
                     sn.IsOpen = false;
                     GenerateFields(sn);
                     pos++;
+                    break;
+                case '$':
+                    pos++; //skip
                     break;
                 default:
                     if (!msg.Sections.Any(s => s.IsOpen))
@@ -119,7 +94,7 @@ namespace FindComputerStuff.SwiftMessages
         {
             if (string.IsNullOrWhiteSpace(sn.Value)) return;
             
-            string[] fieldStrings = sn.Value.Split("\n:".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            string[] fieldStrings = sn.Value.Replace("\r", "").Split(new string[]{"\n:"}, StringSplitOptions.RemoveEmptyEntries);
             if (fieldStrings.Length == 1)
                 sn.Value = fieldStrings[0];
             else
@@ -129,7 +104,7 @@ namespace FindComputerStuff.SwiftMessages
                     int separatorPos = fieldString.IndexOf(':');
                     Field f = new Field();
                     f.ID = fieldString.Substring(0, separatorPos);
-                    f.Values = fieldString.Substring(0, separatorPos + 1).Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    f.Values = fieldString.Substring(separatorPos + 1).Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                     sn.Fields.Add(f);
                 }
                 sn.Value = null;

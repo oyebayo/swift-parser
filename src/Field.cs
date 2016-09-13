@@ -16,5 +16,9 @@ namespace FindComputerStuff.SwiftMessages
             }
         }
         public string[] Values { get; set; }
+        public override string ToString()
+        {
+            return ":" + ID + ":" + Value;
+        }
     }
 }

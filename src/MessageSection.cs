@@ -18,5 +18,20 @@ namespace FindComputerStuff.SwiftMessages
         public List<MessageSection> Sections { get; set; }
         public List<Field> Fields { get; set; }
         internal bool IsOpen { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("{{{0}:", ID);
+            if (Sections != null && Sections.Any()) sb.Append(string.Join("", Sections.Select(s => s.ToString()).ToArray()));
+            if (Fields != null && Fields.Any())
+            {
+                sb.Append(Environment.NewLine);
+                sb.Append(string.Join(Environment.NewLine, Fields.Select(f => f.ToString()).ToArray()));
+            }
+            sb.AppendFormat("{0}",Value);
+            sb.Append("}");
+            return sb.ToString();
+        }
     }
 }
