@@ -11,7 +11,7 @@ namespace FindComputerStuff.SwiftMessages
         public List<Message> Parse(string contents)
         {
             List<Message> messages = new List<Message>();
-            MessageSection root = new MessageSection();
+            Block root = new Block();
             int pos = 0;
             while (pos < contents.Length)
             {
@@ -36,12 +36,12 @@ namespace FindComputerStuff.SwiftMessages
             return Parse(contents);
         }
 
-        private int ProcessCharacters(string contents, int pos, ref MessageSection msg)
+        private int ProcessCharacters(string contents, int pos, ref Block msg)
         {
             switch (contents[pos])
             {
                 case '{':
-                    MessageSection section = new MessageSection();//start a subsection
+                    Block section = new Block();//start a subsection
                     msg.Sections.Add(section);
                     pos++;
                     break;
@@ -49,7 +49,7 @@ namespace FindComputerStuff.SwiftMessages
                     if (!msg.Sections.Any(s => s.IsOpen))
                         throw new Exception("Closing brace without prior open brace, at position" + pos);
 
-                    MessageSection sn = msg.Sections.Last(s => s.IsOpen);
+                    Block sn = msg.Sections.Last(s => s.IsOpen);
                     sn.IsOpen = false;
                     GenerateFields(sn);
                     pos++;
@@ -61,7 +61,7 @@ namespace FindComputerStuff.SwiftMessages
                     if (!msg.Sections.Any(s => s.IsOpen))
                         throw new Exception("Characters without brace, at position " + pos);
 
-                    MessageSection current = msg.Sections.Last(s => s.IsOpen);
+                    Block current = msg.Sections.Last(s => s.IsOpen);
                     int nextBoundary = contents.IndexOf(':', pos);
                     if (nextBoundary < -1) throw new Exception("Field delimiter not found, after position " + pos);
                     current.ID = contents.Substring(pos, nextBoundary - pos);
@@ -90,7 +90,7 @@ namespace FindComputerStuff.SwiftMessages
             return pos;
         }
 
-        private void GenerateFields(MessageSection sn)
+        private void GenerateFields(Block sn)
         {
             if (string.IsNullOrWhiteSpace(sn.Value)) return;
             

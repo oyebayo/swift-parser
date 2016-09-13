@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="Field.cs" />
     <Compile Include="Message.cs" />
-    <Compile Include="MessageSection.cs" />
+    <Compile Include="Block.cs" />
     <Compile Include="MT103Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
