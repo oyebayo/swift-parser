@@ -77,7 +77,9 @@ namespace FindComputerStuff.SwiftMessages
                     if (!msg.Sections.Any(s => s.IsOpen))
                         throw new Exception("Closing brace without prior open brace, at position" + pos);
 
-                    msg.Sections.Last(s => s.IsOpen).IsOpen = false;
+                    MessageSection sn = msg.Sections.Last(s => s.IsOpen);
+                    sn.IsOpen = false;
+                    GenerateFields(sn);
                     pos++;
                     break;
                 default:
@@ -111,6 +113,28 @@ namespace FindComputerStuff.SwiftMessages
             }
 
             return pos;
+        }
+
+        private void GenerateFields(MessageSection sn)
+        {
+            if (string.IsNullOrWhiteSpace(sn.Value)) return;
+            
+            string[] fieldStrings = sn.Value.Split("\n:".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            if (fieldStrings.Length == 1)
+                sn.Value = fieldStrings[0];
+            else
+            {
+                foreach(string fieldString in fieldStrings)
+                {
+                    int separatorPos = fieldString.IndexOf(':');
+                    Field f = new Field();
+                    f.ID = fieldString.Substring(0, separatorPos);
+                    f.Values = fieldString.Substring(0, separatorPos + 1).Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    sn.Fields.Add(f);
+                }
+                sn.Value = null;
+            }
+
         }
     }
 }
